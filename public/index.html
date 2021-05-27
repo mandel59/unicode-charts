@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Code Chart</title>
+    </head>
+    <body>
+        <div>
+            <form>
+                <input id="char"><button type="submit" onclick="lookup(); return false;">Lookup</button>
+            </form>
+        </div>
+        <script>
+            const fetchIndex = fetch("charts/13.0.0/index.json")
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(res.statusText)
+                    }
+                    return res.json()
+                })
+            async function lookup() {
+                /** @type {[number, number, number][]} */
+                const index = await fetchIndex
+                const char = /** @type {HTMLInputElement} */ (document.getElementById("char")).value
+                const m = char.match(/(?:U\+)?([0-9A-F]{4,6})/i)
+                const codepoint = m ? parseInt(m[1], 16) : char.codePointAt(0)
+                const entry = index.find(entry => entry[0] <= codepoint && codepoint <= entry[1])
+                if (entry) {
+                    const page = entry[2]
+                    window.open(`charts/13.0.0/CodeCharts.pdf#page=${page}`, "codechartpdf")
+                }
+            }
+        </script>
+    </body>
+</html>

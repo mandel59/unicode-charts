@@ -1,0 +1,3 @@
+public/**/*.pdf
+public/**/index.json
+node_modules
