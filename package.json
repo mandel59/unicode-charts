@@ -13,6 +13,6 @@
   "license": "MIT-0",
   "dependencies": {
     "pdfjs-dist": "^2.7.570",
-    "serve": "^11.3.2"
+    "serve": "^12.0.0"
   }
 }
