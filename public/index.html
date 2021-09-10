@@ -11,7 +11,8 @@
             </form>
         </div>
         <script>
-            const fetchIndex = fetch("charts/13.0.0/index.json")
+            const version = "14.0.0"
+            const fetchIndex = fetch(`charts/${version}/index.json`)
                 .then(res => {
                     if (!res.ok) {
                         throw new Error(res.statusText)
@@ -27,7 +28,7 @@
                 const entry = index.find(entry => entry[0] <= codepoint && codepoint <= entry[1])
                 if (entry) {
                     const page = entry[2]
-                    window.open(`charts/13.0.0/CodeCharts.pdf#page=${page}`, "codechartpdf")
+                    window.open(`charts/${version}/CodeCharts.pdf#page=${page}`, "codechartpdf")
                 }
             }
         </script>

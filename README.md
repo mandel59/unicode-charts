@@ -1,7 +1,8 @@
 # Unicode code charts lookup
 
 ```bash
-curl -o public/charts/13.0.0/CodeCharts.pdf https://www.unicode.org/Public/13.0.0/charts/CodeCharts.pdf
+export UNICODE_VERSION=14.0.0
+curl -o public/charts/$UNICODE_VERSION/CodeCharts.pdf https://www.unicode.org/Public/$UNICODE_VERSION/charts/CodeCharts.pdf
 npm run build
 npm run start
 ```

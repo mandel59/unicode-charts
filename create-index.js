@@ -17,10 +17,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 const fs = require("fs/promises")
 const path = require("path")
-const pdfjs = require("pdfjs-dist/es5/build/pdf.js")
+const pdfjs = require("pdfjs-dist/legacy/build/pdf.js")
+
+const version = process.env.UNICODE_VERSION ?? "14.0.0"
 
 async function main() {
-    const file = await fs.readFile(path.join(__dirname, "public/charts/13.0.0/CodeCharts.pdf"))
+    const file = await fs.readFile(path.join(__dirname, "public/charts", version, "CodeCharts.pdf"))
     const pdf = await pdfjs.getDocument(file).promise
     const entries = []
     const pageNumBegin = /** @type {number} */ 2
@@ -33,7 +35,7 @@ async function main() {
             .map(item => parseInt(item.str, 16))
         entries.push([Math.min(...codePoints), Math.max(...codePoints), pageNum])
     }
-    await fs.writeFile(path.join(__dirname, "public/charts/13.0.0/index.json"), Buffer.from(JSON.stringify(entries)))
+    await fs.writeFile(path.join(__dirname, "public/charts", version, "index.json"), Buffer.from(JSON.stringify(entries)))
 }
 
 main().catch(error => {
