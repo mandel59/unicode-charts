@@ -1,17 +1,25 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>Code Chart</title>
-    </head>
-    <body>
-        <div>
-            <form>
-                <input id="char"><button type="submit" onclick="lookup(); return false;">Lookup</button>
-            </form>
-        </div>
-        <script>
-            const version = "14.0.0"
+
+<head>
+    <meta charset="utf-8">
+    <title>Code Chart</title>
+</head>
+
+<body>
+    <div>
+        <form>
+            <select id="version">
+                <option value="13.0.0">13.0.0</option>
+                <option value="14.0.0" selected>14.0.0</option>
+                <option value="15.0.0">15.0.0</option>
+            </select>
+            <input id="char"><button type="submit" onclick="lookup(); return false;">Lookup</button>
+        </form>
+    </div>
+    <script>
+        async function lookup() {
+            const version = /** @type {HTMLSelectElement} */ (document.getElementById("version")).value
             const fetchIndex = fetch(`charts/${version}/index.json`)
                 .then(res => {
                     if (!res.ok) {
@@ -19,18 +27,18 @@
                     }
                     return res.json()
                 })
-            async function lookup() {
-                /** @type {[number, number, number][]} */
-                const index = await fetchIndex
-                const char = /** @type {HTMLInputElement} */ (document.getElementById("char")).value
-                const m = char.match(/(?:U\+)?([0-9A-F]{4,6})/i)
-                const codepoint = m ? parseInt(m[1], 16) : char.codePointAt(0)
-                const entry = index.find(entry => entry[0] <= codepoint && codepoint <= entry[1])
-                if (entry) {
-                    const page = entry[2]
-                    window.open(`charts/${version}/CodeCharts.pdf#page=${page}`, "codechartpdf")
-                }
+            /** @type {[number, number, number][]} */
+            const index = await fetchIndex
+            const char = /** @type {HTMLInputElement} */ (document.getElementById("char")).value
+            const m = char.match(/(?:U\+)?([0-9A-F]{4,6})/i)
+            const codepoint = m ? parseInt(m[1], 16) : char.codePointAt(0)
+            const entry = index.find(entry => entry[0] <= codepoint && codepoint <= entry[1])
+            if (entry) {
+                const page = entry[2]
+                window.open(`charts/${version}/CodeCharts.pdf#page=${page}`, `codechartpdf_${version}`)
             }
-        </script>
-    </body>
+        }
+    </script>
+</body>
+
 </html>
