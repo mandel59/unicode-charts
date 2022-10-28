@@ -19,7 +19,7 @@ const fs = require("fs/promises")
 const path = require("path")
 const pdfjs = require("pdfjs-dist/legacy/build/pdf.js")
 
-const version = process.env.UNICODE_VERSION ?? "14.0.0"
+const version = process.env.UNICODE_VERSION ?? "15.0.0"
 
 async function main() {
     const file = await fs.readFile(path.join(__dirname, "public/charts", version, "CodeCharts.pdf"))
