@@ -4,23 +4,80 @@
 <head>
     <meta charset="utf-8">
     <title>Code Chart</title>
+    <style>
+        html {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        header {
+            height: 2em;
+        }
+
+        main {
+            height: calc(100vh - 2em);
+        }
+
+        iframe {
+            box-sizing: border-box;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
 </head>
 
 <body>
-    <div>
+    <header>
         <form>
-            <select id="version">
+            <select id="version" onchange="updateOutputView();">
                 <option value="13.0.0">13.0.0</option>
                 <option value="14.0.0">14.0.0</option>
                 <option value="15.0.0">15.0.0</option>
                 <option value="15.1.0" selected>15.1.0</option>
             </select>
-            <input id="char"><button type="submit" onclick="lookup(); return false;">Lookup</button>
+            <input id="char" onchange="updateOutputView();">
+            <button type="submit" onclick="lookup(); return false;">Lookup</button>
+            <output id="out_codepoint"></output>
+            <output id="out_char"></output>
+            <a href="#" id="link" target="_blank"></a>
         </form>
-    </div>
+    </header>
+    <main>
+        <iframe name="codechartpdf"></iframe>
+    </main>
     <script>
-        async function lookup() {
+        function originalChartUrl(version, page) {
+            return `https://www.unicode.org/Public/${version}/charts/CodeCharts.pdf#page=${page}`
+        }
+        function getFormData() {
             const version = /** @type {HTMLSelectElement} */ (document.getElementById("version")).value
+            const char = /** @type {HTMLInputElement} */ (document.getElementById("char")).value
+            const m = char.match(/(?:U\+)?([0-9A-F]{4,6})/i)
+            const codepoint = m ? parseInt(m[1], 16) : char.codePointAt(0)
+            return { version, codepoint }
+        }
+        async function updateOutputView() {
+            const { version, codepoint } = getFormData()
+            const outputCodePoint = document.getElementById("out_codepoint")
+            const outputChar = document.getElementById("out_char")
+            const page = await getPage(version, codepoint)
+            const link = document.getElementById("link")
+            if (page != null) {
+                outputCodePoint.value = `U+${codepoint.toString(16).toUpperCase().padStart(4, "0")}`
+                outputChar.value = String.fromCodePoint(codepoint)
+                const url = originalChartUrl(version, page)
+                link.href = url
+                link.textContent = url
+            } else {
+                link.href = "#"
+                link.textContent = ""
+            }
+        }
+        async function getPage(version, codepoint) {
             const fetchIndex = fetch(`charts/${version}/index.json`)
                 .then(res => {
                     if (!res.ok) {
@@ -30,15 +87,22 @@
                 })
             /** @type {[number, number, number][]} */
             const index = await fetchIndex
-            const char = /** @type {HTMLInputElement} */ (document.getElementById("char")).value
-            const m = char.match(/(?:U\+)?([0-9A-F]{4,6})/i)
-            const codepoint = m ? parseInt(m[1], 16) : char.codePointAt(0)
             const entry = index.find(entry => entry[0] <= codepoint && codepoint <= entry[1])
             if (entry) {
-                const page = entry[2]
-                window.open(`charts/${version}/CodeCharts.pdf#page=${page}`, `codechartpdf_${version}`)
+                return entry[2]
+            }
+            return null
+        }
+        async function lookup() {
+            const { version, codepoint } = getFormData()
+            const page = await getPage(version, codepoint)
+            if (page != null) {
+                window.open(`charts/${version}/CodeCharts.pdf#page=${page}`, "codechartpdf")
             }
         }
+    </script>
+    <script defer>
+        updateOutputView()
     </script>
 </body>
 
