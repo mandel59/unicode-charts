@@ -15,15 +15,15 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require("fs/promises")
-const path = require("path")
-const pdfjs = require("pdfjs-dist/legacy/build/pdf.js")
+import * as fs from "node:fs/promises"
+import * as path from "node:path"
+import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs"
 
 const version = process.env.UNICODE_VERSION ?? "15.1.0"
 
 async function main() {
-    const file = await fs.readFile(path.join(__dirname, "public/charts", version, "CodeCharts.pdf"))
-    const pdf = await pdfjs.getDocument(file).promise
+    const file = await fs.readFile(path.join(import.meta.dirname, "public/charts", version, "CodeCharts.pdf"))
+    const pdf = await pdfjs.getDocument(file.buffer).promise
     const entries = []
     const pageNumBegin = /** @type {number} */ 2
     const pageNumEnd = /** @type {number} */ pdf.numPages
@@ -35,10 +35,12 @@ async function main() {
             .map(item => parseInt(item.str, 16))
         entries.push([Math.min(...codePoints), Math.max(...codePoints), pageNum])
     }
-    await fs.writeFile(path.join(__dirname, "public/charts", version, "index.json"), Buffer.from(JSON.stringify(entries)))
+    await fs.writeFile(path.join(import.meta.dirname, "public/charts", version, "index.json"), Buffer.from(JSON.stringify(entries)))
 }
 
-main().catch(error => {
+try {
+    await main()
+} catch (error) {
     console.error(error)
     process.exitCode = 1
-})
+}

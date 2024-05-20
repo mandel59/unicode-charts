@@ -2,9 +2,8 @@
   "name": "@mandel59/unicode-charts",
   "version": "1.0.0",
   "description": "",
-  "main": "script.js",
   "scripts": {
-    "build": "node create-index.js",
+    "build": "node create-index.mjs",
     "start": "http-server -a 127.0.0.1 public",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,7 +11,7 @@
   "author": "",
   "license": "MIT-0",
   "dependencies": {
-    "http-server": "^0.12.3",
-    "pdfjs-dist": "^2.7.570"
+    "http-server": "^14.1.1",
+    "pdfjs-dist": "^4.2.67"
   }
 }
