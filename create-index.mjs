@@ -19,7 +19,7 @@ import * as fs from "node:fs/promises"
 import * as path from "node:path"
 import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs"
 
-const version = process.env.UNICODE_VERSION ?? "15.1.0"
+const version = process.env.UNICODE_VERSION ?? "16.0.0"
 
 async function main() {
     const file = await fs.readFile(path.join(import.meta.dirname, "public/charts", version, "CodeCharts.pdf"))
