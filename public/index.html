@@ -40,8 +40,8 @@
                 <option value="14.0.0">14.0.0</option>
                 <option value="15.0.0">15.0.0</option>
                 <option value="15.1.0">15.1.0</option>
-                <option value="16.0.0" selected>16.0.0</option>
-                <option value="17.0.0">17.0.0</option>
+                <option value="16.0.0">16.0.0</option>
+                <option value="17.0.0" selected>17.0.0</option>
             </select>
             <input id="char" onchange="updateOutputView();">
             <button type="submit" onclick="lookup(); return false;">Lookup</button>
@@ -49,11 +49,25 @@
             <output id="out_char"></output>
             <a href="#" id="link" target="_blank"></a>
         </form>
+        <div>
+            <button type="button" onclick="document.getElementById('list_dialog').showModal();">
+                Edit the list...
+            </button>
+            <button onclick="showNext();">Next</button>
+            <dialog id="list_dialog">
+                <textarea id="list_textarea"></textarea>
+                <button type="button" onclick="document.getElementById('list_dialog').close();">
+                    Close
+                </button>
+            </dialog>
+        </div>
     </header>
     <main>
         <iframe name="codechartpdf"></iframe>
     </main>
     <script>
+        const searchPattern = /(?:U\+)?([0-9A-F]{4,6})/ig
+
         function originalChartUrl(version, page) {
             return `https://www.unicode.org/Public/${version}/charts/CodeCharts.pdf#page=${page}`
         }
@@ -102,6 +116,23 @@
             const page = await getPage(version, codepoint)
             if (page != null) {
                 window.open(`charts/${version}/CodeCharts.pdf#page=${page}`, "codechartpdf")
+            }
+        }
+        function showNext() {
+            const charElement = /** @type {HTMLInputElement} */ (document.getElementById("char"))
+            const text = /** @type {HTMLTextAreaElement} */(document.getElementById("list_textarea")).value
+            const m = searchPattern.exec(text)
+            if (m) {
+                charElement.value = m[0]
+                updateOutputView()
+                lookup()
+            } else {
+                const m = searchPattern.exec(text)
+                if (m) {
+                    charElement.value = m[0]
+                    updateOutputView()
+                    lookup()
+                }
             }
         }
     </script>
